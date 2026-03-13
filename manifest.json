@@ -1,0 +1,24 @@
+{
+  "manifest_version": 3,
+  "name": "SpaceHeyMods",
+  "description": "This is an open-source extension with publicly available code that improves SpaceHey and fixes bugs.",
+  "author": "https://spacehey.com/tomokokun",
+  "homepage_url": "https://tomokuroki.github.io",
+  "version": "0.1",
+  "permissions": ["storage"],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "SpaceHeyMods Settings"
+  },
+  "content_scripts": [
+    {
+      "matches": ["*://*.spacehey.com/*"],
+      "js": [
+        "scripts/features.js",
+        "scripts/features/enterToSend.js",
+        "scripts/core.js"
+      ],
+      "run_at": "document_end"
+    }
+  ]
+}

@@ -1,0 +1,149 @@
+:root {
+  --light-gray: #f2f0f0;
+  --gray: #e3e3e3;
+  --dark-gray: #919191;
+  --darker-gray: #545454;
+  --logo-blue: #1D4ED8;
+  --darker-blue: #1E40AF;
+  --lighter-blue: #60A5FA;
+  --even-lighter-blue: #BFDBFE;
+  --lightest-blue: #DBEAFE;
+  --red: #FF0000;
+  --dark-orange: #ED0707;
+  --light-orange: #f9c56c;
+  --even-lighter-orange: #fcdbb8;
+  --strange-yellow: #dbae2e;
+  --green: #34D399;
+  --light-green: #E6F8DD;
+  --medium-green: #A0C99C;
+  --dark-green: #059669;
+
+  accent-color: #1D4ED8;
+  accent-color: var(--logo-blue);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  line-height: 1.225;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 350px;
+}
+
+body {
+  background-color: var(--gray);
+  font-family: -apple-system, BlinkMacSystemFont, "San Francisco", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.container {
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto 10px;
+}
+
+.container.full-width {
+  width: auto;
+}
+
+a {
+  color: var(--darker-blue);
+  text-decoration: none;
+}
+a:hover, a:active {
+  color: #c00;
+  text-decoration: underline;
+}
+
+p,
+ol li,
+ul:not(nav .links):not(footer .links) li {
+  font-size: 0.875em;
+  font-size: max(0.875em, 12px);
+}
+
+nav {
+  color: white;
+  font-size: 72%;
+  font-size: max(72%, 12px);
+}
+
+nav .top {
+  background: var(--logo-blue);
+  padding: 15px 10px 14px 10px;
+  display: flex;
+  position: relative;
+}
+
+nav .top a {
+  text-decoration: none;
+  color: inherit;
+}
+
+nav .top a:hover {
+  text-decoration: underline;
+}
+
+nav .top div {
+  display: inline-block;
+  vertical-align: top;
+}
+
+nav .top .center {
+  text-align: center;
+  flex: 1;
+}
+
+nav .links {
+  background-color: var(--lighter-blue);
+  padding: 3.5px 16px;
+  margin: 0;
+  list-style: none;
+}
+
+nav .links a {
+  text-decoration: none;
+  color: white;
+  text-shadow: 0 0 7px #095DC3;
+  font-size: 0.98em;
+  font-size: max(0.98em, 12px);
+}
+
+nav .links a:hover {
+  text-decoration: underline;
+  color: #040c5c;
+}
+
+main {
+  background: white;
+  color: black;
+  padding: 6px 0px;
+  font-size: 80%;
+}
+
+.box {
+  text-align: center;
+  border: 1px solid #039;
+  margin: 0 0 10px 0;
+  padding: 5px 5px 15px 5px;
+  color: #039;
+}
+
+.box.standalone {
+  margin: 0 auto;
+}
+
+.box h4,
+.box p {
+  margin: 0;
+  padding: 0;
+}
+
+.hide {
+  display: none !important;
+}
