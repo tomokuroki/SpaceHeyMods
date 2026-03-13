@@ -4,8 +4,20 @@
   "description": "This is an open-source extension with publicly available code that improves SpaceHey and fixes bugs.",
   "author": "https://spacehey.com/tomokokun",
   "homepage_url": "https://tomokuroki.github.io",
-  "version": "0.1",
-  "permissions": ["storage"],
+  "version": "0.1.1",
+  "permissions": [
+    "storage",
+    "notifications",
+    "alarms"
+  ],
+  "host_permissions": [
+    "*://*.spacehey.com/*",
+    "*://static.spacehey.net/*",
+    "*://cdn.spacehey.net/*"
+  ],
+  "background": {
+    "service_worker": "scripts/background.js"
+  },
   "action": {
     "default_popup": "popup.html",
     "default_title": "SpaceHeyMods Settings"
@@ -16,6 +28,7 @@
       "js": [
         "scripts/features.js",
         "scripts/features/enterToSend.js",
+        "scripts/features/friendNotifications.js",
         "scripts/core.js"
       ],
       "run_at": "document_end"
