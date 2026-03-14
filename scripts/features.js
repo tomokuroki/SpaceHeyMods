@@ -13,6 +13,13 @@ window.SpaceHeyMods.featuresConfig = [
         description: 'Get notified when you receive a new friend request',
         defaultEnabled: true,
         hostMatches: ['*']
+    },
+    {
+        id: 'messageNotifications',
+        name: 'Message Notifications',
+        description: 'Get notified when someone sends you a message',
+        defaultEnabled: true,
+        hostMatches: ['*']
     }
 ];
 
