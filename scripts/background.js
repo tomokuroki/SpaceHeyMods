@@ -20,11 +20,12 @@ chrome.alarms.onAlarm.addListener((alarm) => {
 
 async function checkUpdates() {
     try {
-        const settings = await chrome.storage.sync.get(['friendNotifications', 'messageNotifications']);
+        const settings = await chrome.storage.sync.get(['friendNotifications', 'messageNotifications', 'blogNotifications']);
         const friendEnabled = settings.friendNotifications !== undefined ? settings.friendNotifications : true;
         const messageEnabled = settings.messageNotifications !== undefined ? settings.messageNotifications : true;
+        const blogEnabled = settings.blogNotifications !== undefined ? settings.blogNotifications : true;
         
-        if (!friendEnabled && !messageEnabled) {
+        if (!friendEnabled && !messageEnabled && !blogEnabled) {
             return;
         }
 
@@ -85,6 +86,25 @@ async function checkUpdates() {
             });
         }
 
+        if (blogEnabled) {
+            const blogMatch = html.match(/<p class="text-green">\s*<a href="\/notifications">[\s\S]*?New Blog Comments\s*(?:\((\d+)\))?\s*<\/a>\s*<\/p>/i);
+            if (blogMatch) {
+                const currentBlogCount = blogMatch[1] ? parseInt(blogMatch[1]) : 1; // If no count but text-green, assume at least 1
+                
+                chrome.storage.local.get(['lastBlogCount'], (result) => {
+                    const lastCount = result.lastBlogCount || 0;
+                    if (currentBlogCount > lastCount) {
+                        notifyBlogComments(currentBlogCount);
+                    }
+                    if (currentBlogCount !== lastCount) {
+                        chrome.storage.local.set({ lastBlogCount: currentBlogCount });
+                    }
+                });
+            } else {
+                chrome.storage.local.set({ lastBlogCount: 0 });
+            }
+        }
+
     } catch (error) {
         console.error('[SpaceHeyMods] Error checking updates:', error);
     }
@@ -112,6 +132,17 @@ function notifyMessages(count) {
         iconUrl: 'https://spacehey.com/favicon.ico',
         title: 'New Messages',
         message: `You have ${count} unread message${count > 1 ? 's' : ''} on SpaceHey!`,
+        contextMessage: 'SpaceHeyMods',
+        priority: 2
+    });
+}
+
+function notifyBlogComments(count) {
+    chrome.notifications.create(`new-blog-comments-${Date.now()}`, {
+        type: 'basic',
+        iconUrl: 'https://spacehey.com/favicon.ico',
+        title: 'New Blog Comments',
+        message: count > 1 ? `You have ${count} new blog comments!` : `You have a new blog comment!`,
         contextMessage: 'SpaceHeyMods',
         priority: 2
     });

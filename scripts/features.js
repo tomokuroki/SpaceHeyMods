@@ -20,6 +20,13 @@ window.SpaceHeyMods.featuresConfig = [
         description: 'Get notified when someone sends you a message',
         defaultEnabled: true,
         hostMatches: ['*']
+    },
+    {
+        id: 'blogNotifications',
+        name: 'New Blog Comments Notifications',
+        description: 'Get notified when you receive new comments on your blog',
+        defaultEnabled: true,
+        hostMatches: ['*']
     }
 ];
 

@@ -4,7 +4,7 @@
   "description": "This is an open-source extension with publicly available code that improves SpaceHey and fixes bugs.",
   "author": "https://spacehey.com/tomokokun",
   "homepage_url": "https://tomokuroki.github.io",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "permissions": [
     "storage",
     "notifications",
@@ -30,6 +30,7 @@
         "scripts/features/enterToSend.js",
         "scripts/features/friendNotifications.js",
         "scripts/features/messageNotifications.js",
+        "scripts/features/blogNotifications.js",
         "scripts/core.js"
       ],
       "run_at": "document_end"
