@@ -27,7 +27,15 @@ window.SpaceHeyMods.featuresConfig = [
         description: 'Get notified when you receive new comments on your blog',
         defaultEnabled: true,
         hostMatches: ['*']
+    },
+    {
+        id: 'notificationSounds',
+        name: 'Notification Sounds',
+        description: 'Play a sound when you receive a new notification',
+        defaultEnabled: true,
+        hostMatches: ['*']
     }
 ];
 
 window.SpaceHeyMods.featuresLogic = {};
+

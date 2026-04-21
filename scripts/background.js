@@ -26,10 +26,12 @@ browser.alarms.onAlarm.addListener((alarm) => {
 
 async function checkUpdates() {
     try {
-        const settings = await browser.storage.sync.get(['friendNotifications', 'messageNotifications', 'blogNotifications']);
+        const settings = await browser.storage.sync.get(['friendNotifications', 'messageNotifications', 'blogNotifications', 'notificationSounds', 'notificationVolume']);
         const friendEnabled = settings.friendNotifications !== undefined ? settings.friendNotifications : true;
         const messageEnabled = settings.messageNotifications !== undefined ? settings.messageNotifications : true;
         const blogEnabled = settings.blogNotifications !== undefined ? settings.blogNotifications : true;
+        const soundEnabled = settings.notificationSounds !== undefined ? settings.notificationSounds : true;
+        const volume = settings.notificationVolume !== undefined ? settings.notificationVolume / 100 : 1;
         
         if (!friendEnabled && !messageEnabled && !blogEnabled) {
             return;
@@ -63,7 +65,7 @@ async function checkUpdates() {
 
                         if (newRequests.length > 0) {
                             newRequests.forEach(req => {
-                                notifyFriendRequest(req);
+                                notifyFriendRequest(req, soundEnabled, volume);
                             });
 
                             const updatedNotified = [...notifiedRequests, ...newRequests.map(req => req.requestId)];
@@ -84,7 +86,7 @@ async function checkUpdates() {
             browser.storage.local.get(['lastMessageCount'], (result) => {
                 const lastCount = result.lastMessageCount || 0;
                 if (currentMessageCount > lastCount) {
-                    notifyMessages(currentMessageCount);
+                    notifyMessages(currentMessageCount, soundEnabled, volume);
                 }
                 if (currentMessageCount !== lastCount) {
                     browser.storage.local.set({ lastMessageCount: currentMessageCount });
@@ -100,7 +102,7 @@ async function checkUpdates() {
                 browser.storage.local.get(['lastBlogCount'], (result) => {
                     const lastCount = result.lastBlogCount || 0;
                     if (currentBlogCount > lastCount) {
-                        notifyBlogComments(currentBlogCount);
+                        notifyBlogComments(currentBlogCount, soundEnabled, volume);
                     }
                     if (currentBlogCount !== lastCount) {
                         browser.storage.local.set({ lastBlogCount: currentBlogCount });
@@ -116,7 +118,22 @@ async function checkUpdates() {
     }
 }
 
-function notifyFriendRequest(request) {
+async function playNotificationSound(volume) {
+    const url = chrome.runtime.getURL('assets/sounds/Notifications.mp3');
+    try {
+        const existing = await chrome.offscreen.hasDocument();
+        if (!existing) {
+            await chrome.offscreen.createDocument({
+                url: 'offscreen.html',
+                reasons: ['AUDIO_PLAYBACK'],
+                justification: 'Play notification sound'
+            });
+        }
+    } catch (e) {}
+    chrome.runtime.sendMessage({ type: 'play-notification-sound', url, volume });
+}
+
+function notifyFriendRequest(request, soundEnabled, volume) {
     let iconUrl = request.image;
     if (iconUrl && !iconUrl.startsWith('http')) {
         iconUrl = 'https://spacehey.com' + (iconUrl.startsWith('/') ? '' : '/') + iconUrl;
@@ -130,9 +147,10 @@ function notifyFriendRequest(request) {
         contextMessage: 'SpaceHeyMods',
         priority: 2
     });
+    if (soundEnabled) playNotificationSound(volume);
 }
 
-function notifyMessages(count) {
+function notifyMessages(count, soundEnabled, volume) {
     browser.notifications.create(`new-messages-${Date.now()}`, {
         type: 'basic',
         iconUrl: 'https://spacehey.com/favicon.ico',
@@ -141,9 +159,10 @@ function notifyMessages(count) {
         contextMessage: 'SpaceHeyMods',
         priority: 2
     });
+    if (soundEnabled) playNotificationSound(volume);
 }
 
-function notifyBlogComments(count) {
+function notifyBlogComments(count, soundEnabled, volume) {
     browser.notifications.create(`new-blog-comments-${Date.now()}`, {
         type: 'basic',
         iconUrl: 'https://spacehey.com/favicon.ico',
@@ -152,4 +171,5 @@ function notifyBlogComments(count) {
         contextMessage: 'SpaceHeyMods',
         priority: 2
     });
+    if (soundEnabled) playNotificationSound(volume);
 }

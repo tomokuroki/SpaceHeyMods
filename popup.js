@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     const config = window.SpaceHeyMods?.featuresConfig || [];
     const container = document.getElementById('featuresList');
-    const featureIds = config.map(f => f.id);
+    const featureIds = [...config.map(f => f.id), 'notificationVolume'];
 
     browser.storage.sync.get(featureIds, (result) => {
         config.forEach(feature => {
@@ -26,9 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             checkboxEl.addEventListener('change', (e) => {
                 const val = e.target.checked;
-                browser.storage.sync.set({ [feature.id]: val }, () => {
-                    console.log(`${feature.name} is now ${val ? 'enabled' : 'disabled'}`);
-                });
+                browser.storage.sync.set({ [feature.id]: val });
             });
 
             const textContainer = document.createElement('div');
@@ -51,7 +49,38 @@ document.addEventListener('DOMContentLoaded', () => {
             labelEl.appendChild(textContainer);
             featureEl.appendChild(labelEl);
 
+            if (feature.id === 'notificationSounds') {
+                const volumeContainer = document.createElement('div');
+                volumeContainer.style.marginLeft = '25px';
+                volumeContainer.style.marginTop = '5px';
+                volumeContainer.style.display = 'flex';
+                volumeContainer.style.alignItems = 'center';
+
+                const volLabel = document.createElement('span');
+                volLabel.innerText = 'Volume: ';
+                volLabel.style.fontSize = '80%';
+                volLabel.style.color = '#545454';
+                volLabel.style.marginRight = '5px';
+
+                const slider = document.createElement('input');
+                slider.type = 'range';
+                slider.min = '0';
+                slider.max = '100';
+                slider.value = result.notificationVolume !== undefined ? result.notificationVolume : 100;
+                slider.style.width = '100px';
+                slider.style.cursor = 'pointer';
+
+                slider.addEventListener('input', (e) => {
+                    browser.storage.sync.set({ notificationVolume: parseInt(e.target.value) });
+                });
+
+                volumeContainer.appendChild(volLabel);
+                volumeContainer.appendChild(slider);
+                featureEl.appendChild(volumeContainer);
+            }
+
             container.appendChild(featureEl);
         });
     });
 });
+

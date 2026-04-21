@@ -8,7 +8,8 @@
   "permissions": [
     "storage",
     "notifications",
-    "alarms"
+    "alarms",
+    "offscreen"
   ],
   "host_permissions": [
     "*://*.spacehey.com/*",
@@ -41,6 +42,12 @@
         "scripts/core.js"
       ],
       "run_at": "document_end"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["assets/sounds/Notifications.mp3", "offscreen.html", "offscreen.js"],
+      "matches": ["<all_urls>"]
     }
   ]
 }
