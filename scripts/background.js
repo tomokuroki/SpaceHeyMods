@@ -1,18 +1,24 @@
+try {
+    importScripts('browser-api.js');
+} catch (e) {
+    console.warn("[SpaceHeyMods] importScripts failed, might be running in a non-worker context or file not found.");
+}
+
 const CONFIG = {
     POLL_INTERVAL: 1,
     ALARM_NAME: 'check-friend-requests',
     HOME_URL: 'https://spacehey.com/home'
 };
 
-chrome.runtime.onInstalled.addListener(() => {
+browser.runtime.onInstalled.addListener(() => {
     checkUpdates();
     
-    chrome.alarms.clear(CONFIG.ALARM_NAME, () => {
-        chrome.alarms.create(CONFIG.ALARM_NAME, { periodInMinutes: CONFIG.POLL_INTERVAL });
+    browser.alarms.clear(CONFIG.ALARM_NAME, () => {
+        browser.alarms.create(CONFIG.ALARM_NAME, { periodInMinutes: CONFIG.POLL_INTERVAL });
     });
 });
 
-chrome.alarms.onAlarm.addListener((alarm) => {
+browser.alarms.onAlarm.addListener((alarm) => {
     if (alarm.name === CONFIG.ALARM_NAME) {
         checkUpdates();
     }
@@ -20,7 +26,7 @@ chrome.alarms.onAlarm.addListener((alarm) => {
 
 async function checkUpdates() {
     try {
-        const settings = await chrome.storage.sync.get(['friendNotifications', 'messageNotifications', 'blogNotifications']);
+        const settings = await browser.storage.sync.get(['friendNotifications', 'messageNotifications', 'blogNotifications']);
         const friendEnabled = settings.friendNotifications !== undefined ? settings.friendNotifications : true;
         const messageEnabled = settings.messageNotifications !== undefined ? settings.messageNotifications : true;
         const blogEnabled = settings.blogNotifications !== undefined ? settings.blogNotifications : true;
@@ -51,7 +57,7 @@ async function checkUpdates() {
                 }
 
                 if (currentRequests.length > 0) {
-                    chrome.storage.local.get(['notifiedRequests'], (result) => {
+                    browser.storage.local.get(['notifiedRequests'], (result) => {
                         const notifiedRequests = result.notifiedRequests || [];
                         const newRequests = currentRequests.filter(req => !notifiedRequests.includes(req.requestId));
 
@@ -64,7 +70,7 @@ async function checkUpdates() {
                             if (updatedNotified.length > 100) {
                                 updatedNotified.splice(0, updatedNotified.length - 100);
                             }
-                            chrome.storage.local.set({ notifiedRequests: updatedNotified });
+                            browser.storage.local.set({ notifiedRequests: updatedNotified });
                         }
                     });
                 }
@@ -75,13 +81,13 @@ async function checkUpdates() {
             const messageMatch = html.match(/messages\s*<span class="count">\((\d+)\)<\/span>/i);
             const currentMessageCount = messageMatch ? parseInt(messageMatch[1]) : 0;
             
-            chrome.storage.local.get(['lastMessageCount'], (result) => {
+            browser.storage.local.get(['lastMessageCount'], (result) => {
                 const lastCount = result.lastMessageCount || 0;
                 if (currentMessageCount > lastCount) {
                     notifyMessages(currentMessageCount);
                 }
                 if (currentMessageCount !== lastCount) {
-                    chrome.storage.local.set({ lastMessageCount: currentMessageCount });
+                    browser.storage.local.set({ lastMessageCount: currentMessageCount });
                 }
             });
         }
@@ -91,17 +97,17 @@ async function checkUpdates() {
             if (blogMatch) {
                 const currentBlogCount = blogMatch[1] ? parseInt(blogMatch[1]) : 1; // If no count but text-green, assume at least 1
                 
-                chrome.storage.local.get(['lastBlogCount'], (result) => {
+                browser.storage.local.get(['lastBlogCount'], (result) => {
                     const lastCount = result.lastBlogCount || 0;
                     if (currentBlogCount > lastCount) {
                         notifyBlogComments(currentBlogCount);
                     }
                     if (currentBlogCount !== lastCount) {
-                        chrome.storage.local.set({ lastBlogCount: currentBlogCount });
+                        browser.storage.local.set({ lastBlogCount: currentBlogCount });
                     }
                 });
             } else {
-                chrome.storage.local.set({ lastBlogCount: 0 });
+                browser.storage.local.set({ lastBlogCount: 0 });
             }
         }
 
@@ -116,7 +122,7 @@ function notifyFriendRequest(request) {
         iconUrl = 'https://spacehey.com' + (iconUrl.startsWith('/') ? '' : '/') + iconUrl;
     }
 
-    chrome.notifications.create(`friend-request-${request.requestId}`, {
+    browser.notifications.create(`friend-request-${request.requestId}`, {
         type: 'basic',
         iconUrl: iconUrl || 'https://spacehey.com/favicon.ico',
         title: 'New Friend Request',
@@ -127,7 +133,7 @@ function notifyFriendRequest(request) {
 }
 
 function notifyMessages(count) {
-    chrome.notifications.create(`new-messages-${Date.now()}`, {
+    browser.notifications.create(`new-messages-${Date.now()}`, {
         type: 'basic',
         iconUrl: 'https://spacehey.com/favicon.ico',
         title: 'New Messages',
@@ -138,7 +144,7 @@ function notifyMessages(count) {
 }
 
 function notifyBlogComments(count) {
-    chrome.notifications.create(`new-blog-comments-${Date.now()}`, {
+    browser.notifications.create(`new-blog-comments-${Date.now()}`, {
         type: 'basic',
         iconUrl: 'https://spacehey.com/favicon.ico',
         title: 'New Blog Comments',

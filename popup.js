@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const container = document.getElementById('featuresList');
     const featureIds = config.map(f => f.id);
 
-    chrome.storage.sync.get(featureIds, (result) => {
+    browser.storage.sync.get(featureIds, (result) => {
         config.forEach(feature => {
             const isEnabled = result[feature.id] !== undefined ? result[feature.id] : feature.defaultEnabled;
 
@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             checkboxEl.addEventListener('change', (e) => {
                 const val = e.target.checked;
-                chrome.storage.sync.set({ [feature.id]: val }, () => {
+                browser.storage.sync.set({ [feature.id]: val }, () => {
                     console.log(`${feature.name} is now ${val ? 'enabled' : 'disabled'}`);
                 });
             });

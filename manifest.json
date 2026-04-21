@@ -22,10 +22,17 @@
     "default_popup": "popup.html",
     "default_title": "SpaceHeyMods Settings"
   },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "spaceheymods@tomokokun",
+      "strict_min_version": "109.0"
+    }
+  },
   "content_scripts": [
     {
       "matches": ["*://*.spacehey.com/*"],
       "js": [
+        "scripts/browser-api.js",
         "scripts/features.js",
         "scripts/features/enterToSend.js",
         "scripts/features/friendNotifications.js",
